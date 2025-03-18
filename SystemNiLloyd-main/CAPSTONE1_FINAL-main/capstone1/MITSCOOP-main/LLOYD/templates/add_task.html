@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #A3D1C6;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            color: #333;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #497D74;
+            padding: 10px 40px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .logo span {
+            color: #fff;
+            font-size: 24px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            gap: 30px;
+        }
+
+        nav a {
+            color: #fff;
+            font-size: 18px;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 10px;
+            transition: background 0.3s ease;
+        }
+
+        nav a:hover {
+            background-color: #00C49a;
+            color: #fff;
+        }
+
+       
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="date"], select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+
+        
+    </style>
+</head>
+<body>
+
+    <!-- Top Bar Navigation -->
+    <nav>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='img/image.png') }}" alt="Logo">
+            <span>Admin Dashboard</span>
+        </div>
+
+        <ul>
+            <li><a href="{{ url_for('profile') }}"><i class="fas fa-clipboard-list"></i> Profile</a></li>
+            <li><a href="{{ url_for('logout') }}"><i class="fas fa-users"></i> Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h2>Assign Task to Employee</h2>
+        <form method="POST" action="{{ url_for('add_task') }}">
+            <label for="user_id">Employee:</label>
+            <select name="user_id" id="user_id" required>
+                <option value="">Select Employee</option>
+                {% for user in users %}
+                <option value="{{ user[0] }}">{{ user[1] }}</option> 
+            {% endfor %}
+            
+            </select>
+    
+            <label for="task_description">Task Description:</label>
+            <input type="text" name="task_description" id="task_description" required>
+    
+            <label for="due_date">Due Date:</label>
+            <input type="date" name="due_date" id="due_date" required>
+
+            <label for="">Due Time:</label>
+            <input type="text" name="due_time" id="due_time" required>
+    
+            <button type="submit">Assign Task</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
