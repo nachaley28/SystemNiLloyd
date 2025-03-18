@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            color: #333;
+        }
+
+        /* Top Bar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #497D74;
+            padding: 10px 40px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Logo Section */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo img {
+            width: 50px; /* Logo size */
+            height: 50px; /* Logo size */
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .logo span {
+            color: #fff;
+            font-size: 24px; /* Font size of the logo text */
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* Navigation Links */
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            gap: 30px;
+        }
+
+        nav ul li {
+            text-align: center;
+        }
+
+        nav a {
+            color: #fff;
+            font-size: 18px;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 10px;
+            transition: background 0.3s ease;
+        }
+
+        nav a:hover {
+            background-color: #00C49a;
+            color: #fff;
+        }
+
+        /* Main Content */
+        .container1 {
+            margin-top: 0px; 
+            padding: 50px;
+            background-color: #A3D1C6;
+            overflow-y: auto;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            height:100vh ;
+        }
+
+      
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* Creates 2 equal columns */
+            gap: 50px; /* Increased gap between cards */
+            justify-items: center;
+            margin-top: px; /* Increased top margin */
+           
+        }
+
+        @media (max-width: 1024px) {
+            .cards-container {
+                grid-template-columns: repeat(2, 1fr); /* 2 columns on medium screens */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .cards-container {
+                grid-template-columns: 1fr; /* 1 column on small screens */
+            }
+        }
+
+        .card {
+            background: #fff;
+            padding: 40px; 
+            border-radius: 10px; 
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+            width: 280px; /* Increased card width */
+            border: 1px solid black;
+        }
+
+        .card:hover {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transform: translateY(-10px);
+            border-color: #00C49a;
+        }
+
+        .card i {
+            font-size: 80px; /* Increased icon size */
+            color: #00C49a;
+            margin-bottom: 20px; /* Increased margin-bottom */
+        }
+
+      
+        /* Button inside card */
+        .card-btn {
+            background: #00C49a;
+            color: white;
+            padding: 15px 35px; /* Increased padding */
+            border: none;
+            border-radius: 35px; /* Increased border radius */
+            cursor: pointer;
+            font-size: 18px; /* Increased font size */
+            transition: background 0.3s ease;
+            margin-top: 15px; /* Increased top margin */
+            outline: none;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .card-btn:hover {
+            background: #FFC2b4;
+            color: #34495E;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .container1 {
+                margin-left: 0;
+                padding: 30px; /* Increased padding */
+            }
+
+            nav {
+                width: 100px;
+                padding: 25px; /* Increased padding */
+            }
+
+            .logo img {
+                width: 55px;
+                height: 55px;
+            }
+
+            nav .logo span {
+                display: none;
+            }
+
+            nav ul li {
+                text-align: center;
+            }
+
+            .logout {
+                font-size: 18px;
+                padding: 15px; /* Increased padding */
+            }
+
+            .card-btn {
+                padding: 12px 25px; /* Increased padding */
+            }
+
+            .card h2 {
+                font-size: 28px; /* Increased font size */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Bar Navigation -->
+    <nav>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='img/image.png') }}" alt="Logo">
+            <span>Employee Dashboard</span>
+        </div>
+
+        <ul>
+            
+            <li><a href="{{ url_for('profile') }}"><i class="fas fa-clipboard-list"></i> Profile</a></li>
+            <li><a href="{{ url_for('logout') }}"><i class="fas fa-users"></i> Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container1">
+        <div class="cards-container">
+            <div class="card">
+                <i class="fas fa-calendar-check"></i>
+                <h2>Attendance</h2>
+                <a class="card-btn" href="{{ url_for('attendance') }}">View Attendance</a>
+            </div>
+            <div class="card">
+                <i class="fas fa-edit"></i>
+                <h2>Add Report</h2>
+                <a class="card-btn" href="{{ url_for('report') }}">Add Report</a>
+            </div>
+            <div class="card">
+                <i class="fas fa-clipboard-list"></i>
+                <h2>Created Report</h2>
+                <a class="card-btn" href="{{ url_for('list_report') }}">View Report</a>
+            </div>
+            <div class="card">
+                <i class="fas fa-users"></i>
+                <h2>View Performance</h2>
+                <a class="card-btn" href="{{ url_for('performance') }}">View Performance</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

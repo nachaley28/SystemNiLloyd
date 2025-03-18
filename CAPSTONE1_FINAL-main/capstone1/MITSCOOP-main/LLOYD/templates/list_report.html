@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            color: #333;
+        }
+
+        /* Top Bar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #497D74;
+            padding: 10px 40px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Logo Section */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .logo span {
+            color: #fff;
+            font-size: 24px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* Navigation Links */
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            gap: 30px;
+        }
+
+        nav ul li {
+            text-align: center;
+        }
+
+        nav a {
+            color: #fff;
+            font-size: 18px;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 10px;
+            transition: background 0.3s ease;
+        }
+
+        nav a:hover {
+            background-color: #00C49a;
+            color: #fff;
+        }
+
+        /* Main Container */
+        .container {
+            padding: 50px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            background-color: #A3D1C6;
+            height: 100vh;
+        }
+
+        .container1 {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 30px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        /* Report List as Bigger Cards */
+        .report-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 0;
+            margin: 0;
+        }
+
+        .report-card {
+            background: #f9f9f9;
+            color: #333;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid black;
+            font-size: 20px;
+        }
+
+        .report-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .report-card span {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .report-card a {
+            background-color: #00C49a;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 18px;
+            transition: background 0.3s ease;
+        }
+
+        .report-card a:hover {
+            background-color: #009978;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            nav {
+                width: 100%;
+                padding: 15px;
+            }
+
+            .logo img {
+                width: 40px;
+                height: 40px;
+            }
+
+            .logo span {
+                display: none;
+            }
+
+            nav ul {
+                gap: 15px;
+            }
+
+            .report-card {
+                padding: 20px;
+                font-size: 18px;
+            }
+
+            .report-card span {
+                font-size: 20px;
+            }
+
+            .report-card a {
+                font-size: 16px;
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Top Bar Navigation -->
+<nav>
+    <div class="logo">
+        <img src="{{ url_for('static', filename='img/image.png') }}" alt="Logo">
+        <span>Employee Dashboard</span>
+    </div>
+
+    <ul>
+        <li><a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> Profile</a></li>
+        <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+    </ul>
+</nav>
+
+<!-- Main Content -->
+<div class="container">
+    <div class="container1">
+        <h2>Created Reports</h2>
+        <ul class="report-list">
+            <li class="report-card"><span>Report 1</span> <a href="#">View</a></li>
+            <li class="report-card"><span>Report 2</span> <a href="#">View</a></li>
+            <li class="report-card"><span>Report 3</span> <a href="#">View</a></li>
+            <li class="report-card"><span>Report 4</span> <a href="#">View</a></li>
+            <li class="report-card"><span>Report 5</span> <a href="#">View</a></li>
+            <li class="report-card"><span>Report 6</span> <a href="#">View</a></li>
+            <li class="report-card"><span>Report 7</span> <a href="#">View</a></li>
+            <li class="report-card"><span>Report 8</span> <a href="#">View</a></li>
+        </ul>
+    </div>
+</div>
+
+</body>
+</html>

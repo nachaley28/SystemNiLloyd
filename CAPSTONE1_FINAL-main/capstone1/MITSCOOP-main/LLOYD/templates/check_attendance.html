@@ -1,0 +1,24 @@
+<form method="POST" action="{{ url_for('check_attendance') }}">
+    <label for="employee_id">Employee:</label>
+    <select name="user_id" id="user_id">
+        <option value="">Select Employee</option>
+        {% for user in users %}
+            <option value="{{ user[0] }}">{{ user[1] }}</option> 
+        {% endfor %}
+    </select>
+
+    <label for="date">Date:</label>
+    <input type="date" name="date" id="date" required>
+
+    <label for="status">Status:</label>
+    <select name="status" id="status" required>
+        <option value="present">Present</option>
+        <option value="absent">Absent</option>
+    </select>
+
+    <button type="submit">Submit Attendance</button>
+</form>
+
+{% if message %}
+    <p>{{ message }}</p>
+{% endif %}
