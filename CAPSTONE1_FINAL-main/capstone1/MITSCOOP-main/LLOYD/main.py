@@ -18,6 +18,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DB'] = 'mitscoop'
+app.config['MYSQL_UNIX_SOCKET'] = '/opt/lampp/var/mysql/mysql.sock'
 
 
 mysql = MySQL(app)
@@ -123,13 +124,13 @@ def report():
             image_data = image.read()
 
             cursor = mysql.connection.cursor()
-            cursor.execute("INSERT INTO report (message, image) VALUES (%s, %s)", (message, image_data))
+            cursor.execute("INSERT INTO report (message, image,user_id,status) VALUES (%s, %s,%s, %s)", (message, image_data,user_id,'Completed'))
             mysql.connection.commit()
             cursor.close()
 
-            if id:
+            if user_id:
                 cursor = mysql.connection.cursor()
-                cursor.execute("UPDATE tasks SET status = %s WHERE id = %s AND user_id = %s", ('completed', id, user_id))
+                cursor.execute(f"DELETE FROM tasks WHERE user_id = {user_id}")
                 mysql.connection.commit()
 
                 if cursor.rowcount == 0:
@@ -262,7 +263,7 @@ def view(report_id):
         return "Image not found", 404
     
 
-@app.route('/delete/<report_id>', methods=['POST'])
+@app.route('/delete/<int:report_id>', methods=['POST'])
 def delete_report(report_id):
     
         cursor = mysql.connection.cursor()
