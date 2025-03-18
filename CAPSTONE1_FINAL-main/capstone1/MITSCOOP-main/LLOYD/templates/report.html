@@ -72,25 +72,75 @@
             background-color: #00C49a;
             color: #fff;
         }
-        .container{
+
+        /* Main Content */
+        .container {
             background-color: #A3D1C6;
             height: 100vh;
             padding-top: 50px;
         }
 
+        .task-container {
+            margin: 30px auto; 
+            padding: 30px;
+            width: 100%;
+            max-width: 900px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            border: 2px solid black;
+            background-color: #f9f9f9;
+            
+        }
+
+        .task-card {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 2px solid black;
+            transition: transform 0.2s ease-in-out;
+            margin-bottom: 15px;
+        }
+
+        .task-card h2 {
+            font-size: 22px;
+            color: #2C3E50;
+            margin-bottom: 8px;
+        }
+
+        .task-card p {
+            font-size: 16px;
+            color: #333;
+            margin: 4px 0;
+        }
+
+        .task-card .pending {
+            color: #FFA500;
+            font-weight: bold;
+        }
+
+        .task-card .completed {
+            color: #00C49a;
+            font-weight: bold;
+        }
+
+        .task-card:hover {
+            transform: translateY(-5px);
+            background-color: #f9f9f9;
+        }
+
         .container1 {
-            margin: 30px auto; /* Centers the container horizontally */
+            margin: 30px auto; 
             padding: 30px;
             background-color: #ddd;
             width: 100%;
             max-width: 900px;
-            height: auto;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             overflow-y: auto;
             border: 2px solid black;
         }
-
 
         h2 {
             font-size: 24px;
@@ -141,27 +191,7 @@
         @media (max-width: 768px) {
             nav {
                 width: 100%;
-                height: auto;
-                position: static;
-            }
-
-            .container1 {
-                margin-left: 0;
-                width: 100%;
-                border-radius: 0;
-            }
-        }
-
-        /* Mobile Responsiveness */
-        @media (max-width: 768px) {
-            .container1 {
-                margin-left: 0;
-                padding: 30px; /* Increased padding */
-            }
-
-            nav {
-                width: 100px;
-                padding: 25px; /* Increased padding */
+                padding: 25px;
             }
 
             .logo img {
@@ -177,19 +207,11 @@
                 text-align: center;
             }
 
-            .logout {
-                font-size: 18px;
-                padding: 15px; /* Increased padding */
-            }
-
-            .card-btn {
-                padding: 12px 25px; /* Increased padding */
-            }
-
-            .card h2 {
-                font-size: 28px; /* Increased font size */
+            .container1 {
+                padding: 30px;
             }
         }
+
     </style>
 </head>
 <body>
@@ -202,29 +224,40 @@
         </div>
 
         <ul>
-            
             <li><a href="{{ url_for('profile') }}"><i class="fas fa-clipboard-list"></i> Profile</a></li>
             <li><a href="{{ url_for('logout') }}"><i class="fas fa-users"></i> Logout</a></li>
         </ul>
     </nav>
 
     <!-- Main Content -->
-     <div class="container">
-    <div class="container1">
+    <div class="container">
+        <!-- Task List Section -->
+        <div class="task-container">
+            {% if tasks %}
+                {% for task in tasks %}
+                <div class="task-card">
+                    <h2>Task:</strong> {{ task[0] }}</h2>  
+                    <p><strong>Due:</strong> {{ task[1] }} </p> 
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>No tasks available</p>
+            {% endif %}
+        </div>
 
-        <form action="{{ url_for('report') }}" method="POST" enctype="multipart/form-data">
-            <h2>Write a Report</h2>
-            <textarea name="message" placeholder="Enter your report here..." data-maxlength="255" rows="8" required></textarea>
+        <!-- Report Submission Form -->
+        <div class="container1">
+            <form action="{{ url_for('report') }}" method="POST" enctype="multipart/form-data">
+                <h2>Write a Report</h2>
+                <textarea name="message" placeholder="Enter your report here..." data-maxlength="255" rows="8" required></textarea>
 
-            <h2>Send a Report Through Image</h2>
-            <input name="image" type="file" accept="image/*"><br>
-            
-            <button type="submit">Submit</button>
-        </form>
-       
+                <h2>Send a Report Through Image</h2>
+                <input name="image" type="file" accept="image/*"><br>
+
+                <button type="submit">Submit</button>
+            </form>
+        </div>
     </div>
-</div>
 
 </body>
 </html>
-

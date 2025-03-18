@@ -6,6 +6,7 @@
     <title>Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        /* Body and general styles */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -24,7 +25,6 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
-        /* Logo Section */
         .logo {
             display: flex;
             align-items: center;
@@ -45,7 +45,6 @@
             text-transform: uppercase;
         }
 
-        /* Navigation Links */
         nav ul {
             list-style: none;
             padding: 0;
@@ -72,7 +71,7 @@
             color: #fff;
         }
 
-        /* Main Container */
+        /* Main Content */
         .container {
             padding: 50px 20px;
             display: flex;
@@ -95,7 +94,6 @@
             color: #333;
         }
 
-        /* Report List as Bigger Cards */
         .report-list {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -114,7 +112,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid black;
+            border: 1px solid #ccc;
             font-size: 20px;
         }
 
@@ -128,19 +126,45 @@
             font-weight: 600;
         }
 
-        .report-card a {
-            background-color: #00C49a;
-            color: #fff;
+        /* Button Styling */
+        .view-btn,
+        .check-btn,
+        .delete_btn {
             padding: 12px 24px;
             border-radius: 8px;
-            text-decoration: none;
             font-weight: bold;
             font-size: 18px;
             transition: background 0.3s ease;
         }
 
-        .report-card a:hover {
-            background-color: #009978;
+        .view-btn {
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+        }
+
+        .view-btn:hover {
+            background-color: #388E3C;
+        }
+
+        .check-btn {
+            background-color: blue;
+            color: white;
+            text-decoration: none;
+        }
+
+        .check-btn:hover {
+            background-color:darkblue;
+        }
+
+        .delete_btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+        }
+
+        .delete_btn:hover {
+            background-color: #c82333;
         }
 
         /* Mobile Responsiveness */
@@ -197,17 +221,32 @@
 <!-- Main Content -->
 <div class="container">
     <div class="container1">
-        <h2>Created Reports</h2>
+        <h2>Reports Submitted</h2>
         <ul class="report-list">
             {% for reportt in report %}
                 <li class="report-card">
-                    <span>Report {{ loop.index }}</span> 
-                    <a href="{{ url_for('view', report_id=reportt[0]) }}">View</a>
+                    <div>
+                        <span>Report {{ loop.index }}: {{ reportt[1] }}</span>
+                        <br>
+                        <span>by {{ reportt[2] }}</span>
+                        <br>
+                        {% if reportt[3] == 'approved' %}
+                            <span class="approved">Approved</span>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <a href="{{ url_for('view', report_id=reportt[0]) }}" class="view-btn">View</a>
+                        <form action="{{ url_for('check', report_id=reportt[0]) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="action_btn check-btn">Check</button>
+                        </form>
+                        <form action="{{ url_for('delete_report', report_id=reportt[0]) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="delete_btn">Delete</button>
+                        </form>
+                    </div>
                 </li>
             {% endfor %}
         </ul>
     </div>
-    
 </div>
 
 </body>

@@ -223,9 +223,11 @@
             </div>
             <div class="card">
                 <i class="fas fa-edit"></i>
-                <h2>Add Report</h2>
-                <a class="card-btn" href="{{ url_for('report') }}">Add Report</a>
+                <h2>Pending Task</h2>
+                <p>{{ task_count }} tasks assigned</p> 
+                <a class="card-btn" href="{{ url_for('report') }}">View Task</a>
             </div>
+            
             <div class="card">
                 <i class="fas fa-clipboard-list"></i>
                 <h2>Created Report</h2>

@@ -213,7 +213,7 @@
     <nav>
         <div class="logo">
             <img src="{{ url_for('static', filename='img/image.png') }}" alt="Logo">
-            <span>Employee Dashboard</span>
+            <span>Admin Dashboard</span>
         </div>
 
         <ul>
@@ -227,81 +227,69 @@
 
         <div class="button-section">
             <a href="{{ url_for('check_attendance') }}" class="btn add-task">Check Attendance</a>
+            <a href="{{ url_for('record') }}" class="btn add-task">Attendance Record</a>
 
-            <a href="{{ url_for('check_attendance') }}" class="btn submit-report">Check Attendance</a>
+            <a href="{{ url_for('add_task') }}" class="btn submit-report">Add Task</a>
+            <a href="{{ url_for('list_report') }}" class="btn attendance">View Reports</a>
+            
 
-            <a href="{{ url_for('check_attendance') }}" class="btn attendance">Check Attendance</a>
         </div>
         
-
         <div class="container1">
             <h2>Report Charts</h2>
 
+            <!-- To Be Evaluated Reports -->
             <div class="progress-container">
-                <div class="progress-label">Submitted Reports</div>
+                <div class="progress-label">To Be Evaluated Reports</div>
                 <div class="progress-bar">
-                    <div class="progress-fill blue">70%</div>
+                    <div class="progress-fill blue" style="width: {{ to_be_evaluated_percentage }}%">{{ to_be_evaluated_percentage|round(1) }}%</div>
                 </div>
             </div>
 
+            <!-- Approved Reports -->
             <div class="progress-container">
-                <div class="progress-label">Late Reports</div>
+                <div class="progress-label">Approved Reports</div>
                 <div class="progress-bar">
-                    <div class="progress-fill green">50%</div>
+                    <div class="progress-fill green" style="width: {{ approved_percentage }}%">{{ approved_percentage|round(1) }}%</div>
                 </div>
             </div>
 
+            <!-- Pending Reports -->
             <div class="progress-container">
-                <div class="progress-label">No Reports</div>
+                <div class="progress-label">Rejected Reports</div>
                 <div class="progress-bar">
-                    <div class="progress-fill orange">30%</div>
+                    <div class="progress-fill orange" style="width: {{ pending_percentage }}%">{{ pending_percentage|round(1) }}%</div>
                 </div>
             </div>
         </div>
+
 
         <div class="table-container">
             <h2>Employee Report Details</h2>
             <table class="report-table">
                 <thead>
                     <tr>
+                        <th>User ID</th>
                         <th>Employee Name</th>
-                        <th>Submitted Reports</th>
-                        <th>Late Reports</th>
-                        <th>No Reports</th>
+                        <th>Number of Reports Submitted</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>John Doe</td>
-                        <td>15</td>
-                        <td>5</td>
-                        <td>2</td>
-                    </tr>
-                    <tr>
-                        <td>Jane Smith</td>
-                        <td>12</td>
-                        <td>8</td>
-                        <td>1</td>
-                    </tr>
-                    <tr>
-                        <td>Mark Johnson</td>
-                        <td>18</td>
-                        <td>3</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>Emily Davis</td>
-                        <td>10</td>
-                        <td>6</td>
-                        <td>4</td>
-                    </tr>
+                    {% for user in users_reports %}
+                        <tr>
+                            <td>{{ user[0] }}</td>  
+                            <td>{{ user[1] }}</td>  
+                            <td>{{ user[2] }}</td>  
+                        </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
+        
 
         <!-- Chart Container -->
         <div class="chart-container">
-            <h2>Monthly Performance</h2>
+            <h2>Weekly Performance</h2>
             <div class="chart-placeholder">
                 <!-- Replace this with actual chart code -->
                 <!-- You can use a library like Chart.js or D3.js -->

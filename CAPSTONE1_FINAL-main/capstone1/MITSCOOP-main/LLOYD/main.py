@@ -2,6 +2,9 @@ from flask import Flask, render_template, redirect, url_for, session,send_file,f
 from flask_mysqldb import MySQL
 import base64
 import io
+from datetime import datetime,timedelta
+
+
 
 
 app = Flask(__name__)
@@ -15,7 +18,6 @@ app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DB'] = 'mitscoop'
-app.config['MYSQL_UNIX_SOCKET'] = '/opt/lampp/var/mysql/mysql.sock'
 
 
 mysql = MySQL(app)
@@ -93,33 +95,58 @@ def landing():
 
 @app.route('/home')
 def home():
-    if 'user_id' not in session:
-        return redirect(url_for('landing'))
-    return render_template('home.html') 
+   
+    user_id = session.get('user_id')  
+    if user_id:
+        cursor = mysql.connection.cursor()
+        cursor.execute("SELECT COUNT(*) FROM tasks WHERE user_id = %s AND status = 'pending'", (user_id,))
+        task_count = cursor.fetchone()[0]
+        cursor.close()
+    else:
+        task_count = 0
+    
+    return render_template('home.html', task_count=task_count)
+    
 
-@app.route('/report',methods=["GET", "POST"])
+@app.route('/report', methods=["GET", "POST"])
 def report():
     if 'user_id' not in session:
         return redirect(url_for('landing'))
-    message = request.form.get('message')  
-    image = request.files.get('image')   
-        
-    if image:  
-        image_data = image.read()  
+    
+    user_id = session['user_id']  
 
-            #
-        cursor = mysql.connection.cursor()
-        cursor.execute("INSERT INTO report (message, image) VALUES (%s, %s)", (message, image_data))
-        mysql.connection.commit()
-        cursor.close()
+    if request.method == "POST":
+        message = request.form.get('message')  
+        image = request.files.get('image')   
 
-           
+        if image:  
+            image_data = image.read()
+
+            cursor = mysql.connection.cursor()
+            cursor.execute("INSERT INTO report (message, image) VALUES (%s, %s)", (message, image_data))
+            mysql.connection.commit()
+            cursor.close()
+
+            if id:
+                cursor = mysql.connection.cursor()
+                cursor.execute("UPDATE tasks SET status = %s WHERE id = %s AND user_id = %s", ('completed', id, user_id))
+                mysql.connection.commit()
+
+                if cursor.rowcount == 0:
+                    print(f"No task updated for task_id {id} and user_id {user_id}")
+                else:
+                    print(f"Task {id} status updated successfully.")
         return redirect(url_for("home"))
 
+        
+
     else:
-          
-       
-        return render_template('report.html') 
+        cursor = mysql.connection.cursor()
+        cursor.execute("SELECT task_description, due_datetime, status FROM tasks WHERE user_id = %s", (user_id,))
+        tasks = cursor.fetchall()
+        cursor.close()
+
+        return render_template('report.html', tasks=tasks)
 
 @app.route('/profile')
 def profile():
@@ -156,19 +183,66 @@ def profile():
     
 @app.route('/admin')
 def admin():
-    return render_template('admin.html')
+    cursor = mysql.connection.cursor()
 
-@app.route('/check')
-def check():
+    cursor.execute("SELECT COUNT(*) FROM report")
+    total_reports = cursor.fetchone()[0]
+
+    
+    cursor.execute("SELECT COUNT(*) FROM report WHERE status = 'to be evaluated'")
+    to_be_evaluated_reports = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM report WHERE status = 'approved'")
+    approved_reports = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM report WHERE status = 'rejected'")
+    rejected_reports = cursor.fetchone()[0]
+
+    
+    to_be_evaluated_percentage = (to_be_evaluated_reports / total_reports) * 100 if total_reports > 0 else 0
+    approved_percentage = (approved_reports / total_reports) * 100 if total_reports > 0 else 0
+    pending_percentage = (rejected_reports / total_reports) * 100 if total_reports > 0 else 0
+
+   
+    cursor.execute("""
+        SELECT u.user_id, u.name, COUNT(r.report_id) AS reports_submitted
+        FROM user u
+        LEFT JOIN report r ON u.user_id = r.user_id
+        GROUP BY u.user_id
+    """)
+    users_reports = cursor.fetchall()  
+
+    
+    cursor.close()
+
+    return render_template(
+        'admin.html',
+        to_be_evaluated_percentage=to_be_evaluated_percentage,
+        approved_percentage=approved_percentage,
+        pending_percentage=pending_percentage,
+        users_reports=users_reports
+    )
+
+@app.route('/check/<int:report_id>', methods=['GET', 'POST'])
+def check(report_id):
     if 'user_id' not in session:
         return redirect(url_for('landing'))
 
+    if request.method == 'POST':
+        cursor = mysql.connection.cursor()
+        cursor.execute("UPDATE report SET status = 'approved' WHERE report_id = %s", (report_id,))
+        mysql.connection.commit()
+        cursor.close()
+
+        return redirect(url_for('list_report')) 
+    
     cursor = mysql.connection.cursor()
-    cursor.execute("SELECT report_id, message, image FROM report")
+    cursor.execute("SELECT report_id, message, image, status FROM report")
     reports = cursor.fetchall()
     cursor.close()
 
-    return render_template('check.html', reports=reports)
+    return render_template('list_report.html', reports=reports)
+
 
 @app.route('/view/<int:report_id>')
 def view(report_id):
@@ -201,6 +275,33 @@ def delete_report(report_id):
 
 
 
+@app.route('/record')
+def record():
+    cursor = mysql.connection.cursor()
+
+    current_date = datetime.now()
+    start_of_week = current_date - timedelta(days=current_date.weekday())  
+    end_of_week = start_of_week + timedelta(days=6)  
+
+    start_of_week_str = start_of_week.strftime('%Y-%m-%d')
+    end_of_week_str = end_of_week.strftime('%Y-%m-%d')
+
+    cursor.execute("""
+        SELECT u.user_id, u.name, a.time, a.status
+        FROM user u
+        LEFT JOIN attendance a ON u.user_id = a.user_id
+        AND a.time BETWEEN %s AND %s
+    """, (start_of_week_str, end_of_week_str))
+
+    attendance_records = cursor.fetchall()
+
+    cursor.close()
+
+    return render_template('record.html', attendance=attendance_records)
+
+
+
+
 @app.route('/performance')
 def performance():
     
@@ -227,9 +328,56 @@ def attendance():
 @app.route('/list_report')
 def list_report():
     cursor = mysql.connection.cursor()
-    cursor.execute("SELECT * FROM report")
+
+    cursor.execute("""
+        SELECT report.report_id, report.message, user.name 
+        FROM report
+        JOIN user ON report.user_id = user.user_id
+    """)
+    
     report = cursor.fetchall()
+    cursor.close()
     return render_template('list_report.html',report=report)
+
+@app.route('/add_task', methods=['GET', 'POST'])
+def add_task():
+    cursor = mysql.connection.cursor()
+    
+    if request.method == 'POST':
+        user_id = request.form.get('user_id')
+        task_description = request.form.get('task_description')
+        due_date = request.form.get('due_date')
+        due_time = request.form.get('due_time')
+
+        if user_id and task_description and due_date and due_time:
+            try:
+                due_datetime = f"{due_date} {due_time}"
+
+                cursor.execute("""
+                    INSERT INTO tasks (user_id, task_description, due_datetime)
+                    VALUES (%s, %s, %s)
+                """, (user_id, task_description, due_datetime))
+                mysql.connection.commit()
+                flash("Task assigned successfully.", "success")
+            except Exception as e:
+                mysql.connection.rollback()
+                flash(f"Error: {str(e)}", "danger")
+        else:
+            flash("Please fill in all fields.", "warning")
+
+        cursor.close()
+        return redirect(url_for('add_task'))
+    
+    cursor.execute("SELECT user_id, name FROM user")
+    users = cursor.fetchall()
+    cursor.close()
+
+    return render_template('add_task.html', users=users)
+    
+
+@app.route('/monitor')
+def monitor():
+    return render_template('monitor.html')
 
 @app.route('/check_attendance', methods=['GET', 'POST'])
 def check_attendance():
@@ -237,35 +385,33 @@ def check_attendance():
     
     if request.method == 'POST':
         user_id = request.form.get('user_id')
-        date = request.form.get('date')
+        time = datetime.now()  
         status = request.form.get('status')
 
-        # Check if employee exists
         cursor.execute("SELECT * FROM user WHERE user_id = %s", (user_id,))
         employee = cursor.fetchone()
 
         if not employee:
             return render_template('check_attendance.html', message="Employee not found.")
 
-        # Insert or update attendance
         cursor.execute("""
-            SELECT * FROM attendance WHERE user_id = %s AND date = %s
-        """, (user_id, date))
+            SELECT * FROM attendance WHERE user_id = %s AND time = %s
+        """, (user_id, time))
         existing_attendance = cursor.fetchone()
 
         if existing_attendance:
             cursor.execute("""
                 UPDATE attendance
-                SET status = %s
-                WHERE user_id = %s AND date = %s
-            """, (status, user_id, date))  # Fix the update query to reference user_id and date properly
+                SET hour = %s, status = %s
+                WHERE user_id = %s AND time = %s
+            """, (status, user_id, time))
             mysql.connection.commit()
             message = "Attendance updated successfully."
         else:
             cursor.execute("""
-                INSERT INTO attendance (user_id, date, status)
+                INSERT INTO attendance (user_id,time,status)
                 VALUES (%s, %s, %s)
-            """, (user_id, date, status))  
+            """, (user_id, time, status))
             mysql.connection.commit()
             message = "Attendance recorded successfully."
         
@@ -273,8 +419,7 @@ def check_attendance():
         return render_template('check_attendance.html', message=message)
 
     else:
-        # Fetch all employees for the dropdown
-        cursor.execute("SELECT * FROM user")  # Make sure table and column names are correct
+        cursor.execute("SELECT * FROM user")
         users = cursor.fetchall()
 
         if not users:
@@ -282,9 +427,6 @@ def check_attendance():
         
         cursor.close()
         return render_template('check_attendance.html', users=users)
-
-
-
 
 
 
