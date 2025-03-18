@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Mar 18, 2025 at 04:09 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Host: localhost
+-- Generation Time: Mar 18, 2025 at 03:56 PM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -29,16 +29,9 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `attendance` (
   `user_id` int(11) NOT NULL,
-  `date` date NOT NULL,
+  `time` timestamp NULL DEFAULT NULL,
   `status` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `attendance`
---
-
-INSERT INTO `attendance` (`user_id`, `date`, `status`) VALUES
-(5, '2025-03-18', 'present');
 
 -- --------------------------------------------------------
 
@@ -49,7 +42,23 @@ INSERT INTO `attendance` (`user_id`, `date`, `status`) VALUES
 CREATE TABLE `report` (
   `report_id` int(11) NOT NULL,
   `message` text DEFAULT NULL,
-  `image` longblob DEFAULT NULL
+  `image` longblob DEFAULT NULL,
+  `user_id` int(11) NOT NULL,
+  `status` varchar(255) NOT NULL DEFAULT 'to be evaluated'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tasks`
+--
+
+CREATE TABLE `tasks` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `task_description` varchar(255) NOT NULL,
+  `due_datetime` datetime NOT NULL,
+  `status` enum('pending','completed') DEFAULT 'pending'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -76,23 +85,24 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`user_id`, `name`, `gender`, `address`, `age`, `status`, `contact`, `position`, `email`, `password`) VALUES
-(5, 'Natalie M Alarcon', 'male', 'Purok 7', 12, 'single', 1222, 'Employee', 'natnat@gmail.com', '123');
+(6, 'Justin De La Vega', 'male', '1', 1, 'active', 1, 'Employee', '1@gmail.com', '123');
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `attendance`
---
-ALTER TABLE `attendance`
-  ADD PRIMARY KEY (`user_id`);
-
---
 -- Indexes for table `report`
 --
 ALTER TABLE `report`
   ADD PRIMARY KEY (`report_id`);
+
+--
+-- Indexes for table `tasks`
+--
+ALTER TABLE `tasks`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `user`
@@ -105,22 +115,32 @@ ALTER TABLE `user`
 --
 
 --
--- AUTO_INCREMENT for table `attendance`
---
-ALTER TABLE `attendance`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
 -- AUTO_INCREMENT for table `report`
 --
 ALTER TABLE `report`
-  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
+-- AUTO_INCREMENT for table `tasks`
+--
+ALTER TABLE `tasks`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `tasks`
+--
+ALTER TABLE `tasks`
+  ADD CONSTRAINT `tasks_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
