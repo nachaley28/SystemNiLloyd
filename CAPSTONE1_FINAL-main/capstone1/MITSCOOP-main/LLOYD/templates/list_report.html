@@ -199,16 +199,15 @@
     <div class="container1">
         <h2>Created Reports</h2>
         <ul class="report-list">
-            <li class="report-card"><span>Report 1</span> <a href="#">View</a></li>
-            <li class="report-card"><span>Report 2</span> <a href="#">View</a></li>
-            <li class="report-card"><span>Report 3</span> <a href="#">View</a></li>
-            <li class="report-card"><span>Report 4</span> <a href="#">View</a></li>
-            <li class="report-card"><span>Report 5</span> <a href="#">View</a></li>
-            <li class="report-card"><span>Report 6</span> <a href="#">View</a></li>
-            <li class="report-card"><span>Report 7</span> <a href="#">View</a></li>
-            <li class="report-card"><span>Report 8</span> <a href="#">View</a></li>
+            {% for reportt in report %}
+                <li class="report-card">
+                    <span>Report {{ loop.index }}</span> 
+                    <a href="{{ url_for('view', report_id=reportt[0]) }}">View</a>
+                </li>
+            {% endfor %}
         </ul>
     </div>
+    
 </div>
 
 </body>

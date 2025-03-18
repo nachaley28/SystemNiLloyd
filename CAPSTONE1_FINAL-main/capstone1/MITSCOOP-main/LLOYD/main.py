@@ -15,6 +15,8 @@ app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DB'] = 'mitscoop'
+app.config['MYSQL_UNIX_SOCKET'] = '/opt/lampp/var/mysql/mysql.sock'
+
 
 mysql = MySQL(app)
 
@@ -168,8 +170,8 @@ def check():
 
     return render_template('check.html', reports=reports)
 
-@app.route('/view/<report_id>')
-def view_image(report_id):
+@app.route('/view/<int:report_id>')
+def view(report_id):
     
     cursor = mysql.connection.cursor()
     cursor.execute("SELECT image FROM report WHERE report_id = %s", (report_id,))
@@ -217,11 +219,17 @@ def logout():
 
 @app.route('/attendance')
 def attendance():
-    return render_template('attendance.html')
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT * FROM attendance WHERE user_id = %s", (session['user_id'],))
+    attendance = cursor.fetchall()
+    return render_template('attendance.html',attendance=attendance)
 
 @app.route('/list_report')
 def list_report():
-    return render_template('list_report.html')
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT * FROM report")
+    report = cursor.fetchall()
+    return render_template('list_report.html',report=report)
 
 @app.route('/check_attendance', methods=['GET', 'POST'])
 def check_attendance():
